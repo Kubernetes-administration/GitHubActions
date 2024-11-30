@@ -1,0 +1,48 @@
+name: publish
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'plugins/**/package.json'    # Any package.json inside the plugins folder
+      - 'plugins/**/src/**'          # Any file inside the src folder in the plugins folder
+
+env: 
+  NODE_VERSION: 18.x
+  PARALLEL_PUBLISH_JOBS: 10
+
+jobs:
+  changed_files:
+    runs-on: ubuntu-latest
+    name: Test changed-files
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Step to get the list of changed files between the previous and current commit
+      - name: Get changed files
+        id: changes
+        run: |
+          # Get the list of changed files
+          changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          echo "Changed files: $changed_files"
+          
+          # Save the list of changed files as an output variable to use later
+          echo "::set-output name=changed_files::$changed_files"
+
+      # Optional: Display the changed files
+      - name: Display changed files
+        run: |
+          echo "Changed files detected: ${{ steps.changes.outputs.changed_files }}"
+
+      # Example of using the changed files in a conditional step
+      - name: Run action if specific files changed
+        run: |
+          # Check if any relevant files (src or package.json) are in the changed files list
+          if [[ "${{ steps.changes.outputs.changed_files }}" == *"plugins/"* ]]; then
+            echo "Relevant files changed in plugins, running the next steps..."
+            # You can add additional steps here that should run when relevant files change
+          else
+            echo "No relevant changes detected, skipping..."
+          fi
