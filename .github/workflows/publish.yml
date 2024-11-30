@@ -45,20 +45,28 @@ jobs:
           else
             echo "No relevant changes detected, skipping..."
           fi
-        
-      - name: Use Node.js ${{ env.NODE_VERSION }}
-        uses: actions/setup-node@v4
-        with:
+    
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+    steps:
+        - uses: actions/checkout@v4
+    
+        - name: Use Node.js ${{ env.NODE_VERSION }}
+          uses: actions/setup-node@v4
+          with:
             node-version: ${{ env.NODE_VERSION }}
             cache: yarn
-      - name: Install yarn 2
-        run: npm install -g yarn@berry
+        - name: Install yarn 2
+          run: npm install -g yarn@berry
 
-      - name: Install dependencies
-        run: yarn install --immutable
+        - name: Install dependencies
+          run: yarn install --immutable
 
-      - name: Build type declarations
-        run: yarn tsc
+        - name: Build type declarations
+          run: yarn tsc
 
-      - name: Build packages
-        run: yarn backstage-cli repo build
+        - name: Build packages
+          run: yarn backstage-cli repo build
