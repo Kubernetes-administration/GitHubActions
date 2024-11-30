@@ -63,38 +63,10 @@ jobs:
         - name: Install yarn 2
           run: npm install -g yarn@berry
 
-        # Install dependencies for all plugin directories
-        - name: Install dependencies in all plugins
-          run: |
-            for dir in plugins/*; do
-              if [ -d "$dir" ]; then
-                echo "Installing dependencies in $dir"
-                cd $dir
-                yarn install
-                cd -
-              fi
-            done
+        # Step 5: Set npm authentication token
+        - name: Set npm token
+          run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
 
-        # Build type declarations for all plugin directories
-        - name: Build type declarations in all plugins
-          run: |
-            for dir in plugins/*; do
-              if [ -d "$dir" ]; then
-                echo "Building types in $dir"
-                cd $dir
-                yarn tsc
-                cd -
-              fi
-            done
-
-        # Build packages for all plugin directories
-        - name: Build packages in all plugins
-          run: |
-            for dir in plugins/*; do
-              if [ -d "$dir" ]; then
-                echo "Building packages in $dir"
-                cd $dir
-                yarn backstage-cli repo build
-                cd -
-              fi
-            done
+        # Step 6: Publish the package to npm registry
+        - name: Publish package
+          run: yarn publish --non-interactive --access public  # Use --access restricted if you want to publish as private
