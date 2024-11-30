@@ -7,10 +7,6 @@ on:
       - 'plugins/**/package.json'    # Any package.json inside the plugins folder
       - 'plugins/**/src/**'          # Any file inside the src folder in the plugins folder
 
-env: 
-  NODE_VERSION: 18.x
-  PARALLEL_PUBLISH_JOBS: 10
-
 jobs:
   changed_files:
     runs-on: ubuntu-latest
