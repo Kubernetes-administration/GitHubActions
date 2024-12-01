@@ -81,10 +81,7 @@ jobs:
           # Get the existing version from the registry
           EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
 
-          if [ -z "$EXISTING_VERSION" ]; then
-            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
-            echo "::set-output name=publish::true"
-          elif semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
+          if semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
             echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
             echo "::set-output name=publish::true"
           else
@@ -108,10 +105,7 @@ jobs:
           # Get the existing version from the registry
           EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
 
-          if [ -z "$EXISTING_VERSION" ]; then
-            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
-            echo "::set-output name=publish::true"
-          elif semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
+          if semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
             echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
             echo "::set-output name=publish::true"
           else
@@ -133,10 +127,7 @@ jobs:
           # Get the existing version from the registry
           EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
 
-          if [ -z "$EXISTING_VERSION" ]; then
-            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
-            echo "::set-output name=publish::true"
-          elif semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
+          if semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
             echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
             echo "::set-output name=publish::true"
           else
@@ -158,10 +149,7 @@ jobs:
           # Get the existing version from the registry
           EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
 
-          if [ -z "$EXISTING_VERSION" ]; then
-            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
-            echo "::set-output name=publish::true"
-          elif semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
+          if semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
             echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
             echo "::set-output name=publish::true"
           else
