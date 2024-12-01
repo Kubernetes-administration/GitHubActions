@@ -38,7 +38,7 @@ jobs:
 
         # Step 6: Publish the package to npm registry
         - name: Publish package
-          run: npm publish --registry=https://npm.pkg.github.com/@ukohae
+          run: npm publish --registry=https://npm.pkg.github.com/Kubernetes-administration
 
   changed_files:
     runs-on: ubuntu-latest
