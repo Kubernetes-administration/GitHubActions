@@ -1,16 +1,28 @@
 {
- "name": "root",
- "version": "1.0.0",
- "engines": {
-  "node": "18 || 20"
- },
-  "workspaces":{
-    "packages": [
-      "packages/**",
-      "plugins/**"
-    ]
-  },
-"publishConfig": {
-  "registry": "https://npm.pkg.github.com"
-}
-}
+    "name": "node",
+    "version": "1.0.0",
+    "description": "A short description of your package",
+    "main": "index.js",           
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+      "example", 
+      "npm", 
+      "package"                    
+    ],
+    "author": "Developer",         
+    "license": "MIT",              
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/Kubernetes-administration/GitHubActions.git"
+    },
+    "bugs": {
+      "url": "https://github.com/Kubernetes-administration/GitHubActions/issues"
+    },
+    "homepage": "https://github.com/Kubernetes-administration/GitHubActions#readme",
+    "publishConfig": {
+      "registry": "https://registry.npmjs.org/"
+    }
+  }
+  
