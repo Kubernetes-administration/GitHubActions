@@ -106,7 +106,7 @@ jobs:
       # Publish the packages if the output is 'true' from previous steps
       - name: Publish file 1
         if: steps.file1.outputs.publish == 'true'
-        run: npm publish plugins/file1/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+        run: npm publish plugins/file1/ --registry=https://npm.pkg.github.com/Kubernetes-administration --verbose
 
       - name: Publish file 2
         if: steps.file2.outputs.publish == 'true'
