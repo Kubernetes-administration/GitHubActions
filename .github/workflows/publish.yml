@@ -38,7 +38,7 @@ jobs:
 
         # Step 6: Publish the package to npm registry
         - name: Publish package
-          run: npm publish --access public --registry=https://npm.pkg.github.com
+          run: npm publish plugins/file1 --access public --registry=https://npm.pkg.github.com
 
   changed_files:
     runs-on: ubuntu-latest
