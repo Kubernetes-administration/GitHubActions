@@ -1,0 +1,174 @@
+name: publish
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'plugins/**/package.json'    # Any package.json inside the plugins folder
+      - 'plugins/**/src/**'          # Any file inside the src folder in the plugins folder
+
+env: 
+  NODE_VERSION: 18.x
+
+jobs:
+  changed_files:
+    runs-on: ubuntu-latest
+    name: Test changed-files
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Step to get the list of changed files between the previous and current commit
+      - name: Get changed files
+        id: changes
+        run: |
+          # Get the list of changed files
+          changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
+          echo "Changed files: $changed_files"
+          
+          # Save the list of changed files as an output variable to use later
+          echo "::set-output name=changed_files::$changed_files"
+
+      # Optional: Display the changed files
+      - name: Display changed files
+        run: |
+          echo "Changed files detected: ${{ steps.changes.outputs.changed_files }}"
+
+      # Example of using the changed files in a conditional step
+      - name: Run action if specific files changed
+        run: |
+          # Check if any relevant files (src or package.json) are in the changed files list
+          if [[ "${{ steps.changes.outputs.changed_files }}" == *"plugins/"* ]]; then
+            echo "Relevant files changed in plugins, running the next steps..."
+          else
+            echo "No relevant changes detected, skipping..."
+          fi  
+
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+    
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
+
+      - name: Install yarn 2
+        run: npm install -g yarn@berry
+
+      # Step 5: Set npm token for GitHub Packages
+      - name: Set GitHub npm token for GitHub registry
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}" >> ~/.npmrc
+
+      # Step 6: Install semver for version comparison
+      - name: Install semver
+        run: npm install -g semver
+
+      # Function to check version and publish if necessary
+      - name: Check and publish file1
+        id: check_file1
+        run: |
+          PACKAGE_NAME="@kubernetes-administration/file1"
+          NEW_VERSION=$(jq -r '.version' plugins/file1/package.json)  # Extract version from package.json
+          
+          # Get the existing version from the registry
+          EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
+
+          if [ -z "$EXISTING_VERSION" ]; then
+            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
+            echo "::set-output name=publish::true"
+          elif semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
+            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
+            echo "::set-output name=publish::true"
+          else
+            echo "New version ($NEW_VERSION) is not greater than the existing version ($EXISTING_VERSION). Skipping publish."
+            echo "::set-output name=publish::false"
+          fi
+
+      - name: Publish file1
+        if: steps.check_file1.outputs.publish == 'true'
+        run: npm publish plugins/file1/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+      # Repeat the process for file2, file3, and file4
+
+      # Check and publish file2
+      - name: Check and publish file2
+        id: check_file2
+        run: |
+          PACKAGE_NAME="@kubernetes-administration/file2"
+          NEW_VERSION=$(jq -r '.version' plugins/file2/package.json)  # Extract version from package.json
+          
+          # Get the existing version from the registry
+          EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
+
+          if [ -z "$EXISTING_VERSION" ]; then
+            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
+            echo "::set-output name=publish::true"
+          elif semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
+            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
+            echo "::set-output name=publish::true"
+          else
+            echo "New version ($NEW_VERSION) is not greater than the existing version ($EXISTING_VERSION). Skipping publish."
+            echo "::set-output name=publish::false"
+          fi
+
+      - name: Publish file2
+        if: steps.check_file2.outputs.publish == 'true'
+        run: npm publish plugins/file2/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+      # Check and publish file3
+      - name: Check and publish file3
+        id: check_file3
+        run: |
+          PACKAGE_NAME="@kubernetes-administration/file3"
+          NEW_VERSION=$(jq -r '.version' plugins/file3/package.json)  # Extract version from package.json
+          
+          # Get the existing version from the registry
+          EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
+
+          if [ -z "$EXISTING_VERSION" ]; then
+            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
+            echo "::set-output name=publish::true"
+          elif semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
+            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
+            echo "::set-output name=publish::true"
+          else
+            echo "New version ($NEW_VERSION) is not greater than the existing version ($EXISTING_VERSION). Skipping publish."
+            echo "::set-output name=publish::false"
+          fi
+
+      - name: Publish file3
+        if: steps.check_file3.outputs.publish == 'true'
+        run: npm publish plugins/file3/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+      # Check and publish file4
+      - name: Check and publish file4
+        id: check_file4
+        run: |
+          PACKAGE_NAME="@kubernetes-administration/file4"
+          NEW_VERSION=$(jq -r '.version' plugins/file4/package.json)  # Extract version from package.json
+          
+          # Get the existing version from the registry
+          EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
+
+          if [ -z "$EXISTING_VERSION" ]; then
+            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
+            echo "::set-output name=publish::true"
+          elif semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
+            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
+            echo "::set-output name=publish::true"
+          else
+            echo "New version ($NEW_VERSION) is not greater than the existing version ($EXISTING_VERSION). Skipping publish."
+            echo "::set-output name=publish::false"
+          fi
+
+      - name: Publish file4
+        if: steps.check_file4.outputs.publish == 'true'
+        run: npm publish plugins/file4/ --registry=https://npm.pkg.github.com/Kubernetes-administration
