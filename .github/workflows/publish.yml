@@ -1,14 +1,15 @@
 name: publish
+
 on:
   push:
     branches:
       - develop
     paths:
-      - 'plugins/**/package.json'    # Any package.json inside the plugins folder
-      - 'plugins/**/src/**'          # Any file inside the src folder in the plugins folder
+      - 'plugins/**/package.json'
+      - 'plugins/**/src/**'
 
 env: 
-    NODE_VERSION: 18.x
+  NODE_VERSION: 18.x
 
 jobs:
   changed_files:
@@ -19,69 +20,50 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Step to get the list of changed files between the previous and current commit
       - name: Get changed files
         id: changes
         run: |
-          # Get the list of changed files
           changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
-          echo "Changed files: $changed_files"
-          
-          # Save the list of changed files as an output variable to use later
           echo "::set-output name=changed_files::$changed_files"
 
-      # Optional: Display the changed files
       - name: Display changed files
         run: |
-          echo "Changed files detected: ${{ steps.changes.outputs.changed_files }}"
+          echo "Changed files: ${{ steps.changes.outputs.changed_files }}"
 
-      # Example of using the changed files in a conditional step
-      - name: Run action if specific files changed
-        run: |
-          # Check if any relevant files (src or package.json) are in the changed files list
-          if [[ "${{ steps.changes.outputs.changed_files }}" == *"plugins/"* ]]; then
-            echo "Relevant files changed in plugins, running the next steps..."
-            # You can add additional steps here that should run when relevant files change
-          else
-            echo "No relevant changes detected, skipping..."
-          fi  
-          
   publish:
     runs-on: ubuntu-latest
     permissions:
-        contents: read
-        packages: write
+      contents: read
+      packages: write
     steps:
-        - uses: actions/checkout@v4
-    
-        - name: Use Node.js ${{ env.NODE_VERSION }}
-          uses: actions/setup-node@v4
-          with:
-            node-version: ${{ env.NODE_VERSION }}
-            cache: yarn
+      - uses: actions/checkout@v4
 
-        - name: Install yarn 2
-          run: npm install -g yarn@berry
-        # Step 5: Set npm token
-        - name: Set npm token for npmjs registry
-          run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
+      - name: Use Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
 
-        # Step 5.1: Set GitHub npm token (for GitHub Packages)
-        - name: Set GitHub npm token for GitHub registry
-          run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}" >> ~/.npmrc
+      - name: Install yarn 2
+        run: npm install -g yarn@berry
 
-        # # Step 6: Publish the package to npm registry
-        # - name: Publish package
-        #   run: npm publish --registry=https://npm.pkg.github.com/Kubernetes-administration
+      - name: Set GitHub npm token
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}" >> ~/.npmrc
 
-        # - name: Publish file 1
-        #   run: npm publish plugins/file1/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+      - name: Install semver
+        run: npm install -g semver
 
-        - name: Publish file 2
-          run: npm publish plugins/file2/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+      - name: Check and publish plugins
+        run: |
+          for plugin in file1 file2 file3 file4; do
+            PACKAGE_NAME="@kubernetes-administration/$plugin"
+            NEW_VERSION=$(jq -r ".version" plugins/$plugin/package.json)
+            EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
 
-        # - name: Publish file 3
-        #   run: npm publish plugins/file3/ --registry=https://npm.pkg.github.com/Kubernetes-administration
-
-        # - name: Publish file 4
-        #   run: npm publish plugins/file4 --registry=https://npm.pkg.github.com/Kubernetes-administration
+            if [ -z "$EXISTING_VERSION" ] || semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
+              echo "Publishing $PACKAGE_NAME ($NEW_VERSION)..."
+              npm publish plugins/$plugin/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+            else
+              echo "Skipping $PACKAGE_NAME: Version $NEW_VERSION is not greater than existing version $EXISTING_VERSION"
+            fi
+          done
