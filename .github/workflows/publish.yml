@@ -75,13 +75,13 @@ jobs:
         #   run: npm publish --registry=https://npm.pkg.github.com/Kubernetes-administration
 
         - name: Publish file 1
-          run: npm publish plugins/file1 --registry=https://npm.pkg.github.com/Kubernetes-administration
+          run: npm publish plugins/file1 --registry=https://npm.pkg.github.com/Kubernetes-administration --verbose
 
-        - name: Publish file 2
-          run: npm publish plugins/file2 --registry=https://npm.pkg.github.com/Kubernetes-administration
+        # - name: Publish file 2
+        #   run: npm publish plugins/file2 --registry=https://npm.pkg.github.com/Kubernetes-administration
 
-        - name: Publish file 3
-          run: npm publish plugins/file3 --registry=https://npm.pkg.github.com/Kubernetes-administration
+        # - name: Publish file 3
+        #   run: npm publish plugins/file3 --registry=https://npm.pkg.github.com/Kubernetes-administration
 
-        - name: Publish file 4
-          run: npm publish plugins/file3 --registry=https://npm.pkg.github.com/Kubernetes-administration
+        # - name: Publish file 4
+        #   run: npm publish plugins/file4 --registry=https://npm.pkg.github.com/Kubernetes-administration
