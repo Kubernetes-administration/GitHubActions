@@ -1,32 +1,17 @@
-name: publish
+name: Publish Packages
 
 on:
   push:
     branches:
       - develop
     paths:
-      - 'plugins/**/package.json'
-      - 'plugins/**/src/**'
+      - 'plugins/**/package.json'    # Any package.json inside the plugins folder
+      - 'plugins/**/src/**'          # Any file inside the src folder in the plugins folder
 
 env: 
-  NODE_VERSION: 18.x
+    NODE_VERSION: 18.x
 
 jobs:
-  changed_files:
-    runs-on: ubuntu-latest
-    name: Test changed-files
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Get changed files
-        id: changes
-        run: |
-          changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
-          echo "Changed files: $changed_files"
-          echo "::set-output name=changed_files::$changed_files"
-
   publish:
     runs-on: ubuntu-latest
     permissions:
@@ -34,7 +19,7 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
-    
+
       - name: Use Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
@@ -44,149 +29,93 @@ jobs:
       - name: Install semver
         run: npm install -g semver
 
-      - name: Install jq (for version extraction)
-        run: sudo apt-get install jq
-
-      # Check and publish file1
-      - name: Check and publish file1
-        id: check_file1
+      # Loop through the files you want to check/publish
+      - name: Check and Publish file 1
+        id: file1
         run: |
           PACKAGE_NAME="@kubernetes-administration/file1"
           NEW_VERSION=$(jq -r '.version' plugins/file1/package.json)  # Extract version from package.json
           
-          # Debugging: Ensure NEW_VERSION is being extracted correctly
-          echo "Extracted NEW_VERSION for file1: $NEW_VERSION"
-          
-          if [ -z "$NEW_VERSION" ]; then
-            echo "ERROR: Failed to extract version for file1. Exiting."
-            exit 1
-          fi
-
           # Get the existing version from the registry
           EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
-
-          # Debugging: Show the existing version
-          echo "Existing version in registry for file1: $EXISTING_VERSION"
-
-          if [ -z "$EXISTING_VERSION" ]; then
-            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
-            echo "::set-output name=publish::true"
-          elif semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
-            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
+          
+          # Check if the version exists and if the new version is greater
+          if [ -z "$EXISTING_VERSION" ] || semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
+            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION), or package does not exist. Proceeding to publish."
             echo "::set-output name=publish::true"
           else
             echo "New version ($NEW_VERSION) is not greater than the existing version ($EXISTING_VERSION). Skipping publish."
             echo "::set-output name=publish::false"
           fi
 
-      - name: Publish file1
-        if: steps.check_file1.outputs.publish == 'true'
-        run: npm publish plugins/file1/ --registry=https://npm.pkg.github.com/Kubernetes-administration
-
-      # Check and publish file2
-      - name: Check and publish file2
-        id: check_file2
+      # Repeat the process for file2, file3, and file4 (same logic for each file)
+      - name: Check and Publish file 2
+        id: file2
         run: |
           PACKAGE_NAME="@kubernetes-administration/file2"
           NEW_VERSION=$(jq -r '.version' plugins/file2/package.json)  # Extract version from package.json
           
-          # Debugging: Ensure NEW_VERSION is being extracted correctly
-          echo "Extracted NEW_VERSION for file2: $NEW_VERSION"
-          
-          if [ -z "$NEW_VERSION" ]; then
-            echo "ERROR: Failed to extract version for file2. Exiting."
-            exit 1
-          fi
-
           # Get the existing version from the registry
           EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
-
-          # Debugging: Show the existing version
-          echo "Existing version in registry for file2: $EXISTING_VERSION"
-
-          if [ -z "$EXISTING_VERSION" ]; then
-            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
-            echo "::set-output name=publish::true"
-          elif semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
-            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
+          
+          # Check if the version exists and if the new version is greater
+          if [ -z "$EXISTING_VERSION" ] || semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
+            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION), or package does not exist. Proceeding to publish."
             echo "::set-output name=publish::true"
           else
             echo "New version ($NEW_VERSION) is not greater than the existing version ($EXISTING_VERSION). Skipping publish."
             echo "::set-output name=publish::false"
           fi
 
-      - name: Publish file2
-        if: steps.check_file2.outputs.publish == 'true'
-        run: npm publish plugins/file2/ --registry=https://npm.pkg.github.com/Kubernetes-administration
-
-      # Check and publish file3
-      - name: Check and publish file3
-        id: check_file3
+      - name: Check and Publish file 3
+        id: file3
         run: |
           PACKAGE_NAME="@kubernetes-administration/file3"
           NEW_VERSION=$(jq -r '.version' plugins/file3/package.json)  # Extract version from package.json
           
-          # Debugging: Ensure NEW_VERSION is being extracted correctly
-          echo "Extracted NEW_VERSION for file3: $NEW_VERSION"
-          
-          if [ -z "$NEW_VERSION" ]; then
-            echo "ERROR: Failed to extract version for file3. Exiting."
-            exit 1
-          fi
-
           # Get the existing version from the registry
           EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
-
-          # Debugging: Show the existing version
-          echo "Existing version in registry for file3: $EXISTING_VERSION"
-
-          if [ -z "$EXISTING_VERSION" ]; then
-            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
-            echo "::set-output name=publish::true"
-          elif semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
-            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
+          
+          # Check if the version exists and if the new version is greater
+          if [ -z "$EXISTING_VERSION" ] || semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
+            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION), or package does not exist. Proceeding to publish."
             echo "::set-output name=publish::true"
           else
             echo "New version ($NEW_VERSION) is not greater than the existing version ($EXISTING_VERSION). Skipping publish."
             echo "::set-output name=publish::false"
           fi
 
-      - name: Publish file3
-        if: steps.check_file3.outputs.publish == 'true'
-        run: npm publish plugins/file3/ --registry=https://npm.pkg.github.com/Kubernetes-administration
-
-      # Check and publish file4
-      - name: Check and publish file4
-        id: check_file4
+      - name: Check and Publish file 4
+        id: file4
         run: |
           PACKAGE_NAME="@kubernetes-administration/file4"
           NEW_VERSION=$(jq -r '.version' plugins/file4/package.json)  # Extract version from package.json
           
-          # Debugging: Ensure NEW_VERSION is being extracted correctly
-          echo "Extracted NEW_VERSION for file4: $NEW_VERSION"
-          
-          if [ -z "$NEW_VERSION" ]; then
-            echo "ERROR: Failed to extract version for file4. Exiting."
-            exit 1
-          fi
-
           # Get the existing version from the registry
           EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
-
-          # Debugging: Show the existing version
-          echo "Existing version in registry for file4: $EXISTING_VERSION"
-
-          if [ -z "$EXISTING_VERSION" ]; then
-            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
-            echo "::set-output name=publish::true"
-          elif semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
-            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
+          
+          # Check if the version exists and if the new version is greater
+          if [ -z "$EXISTING_VERSION" ] || semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
+            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION), or package does not exist. Proceeding to publish."
             echo "::set-output name=publish::true"
           else
             echo "New version ($NEW_VERSION) is not greater than the existing version ($EXISTING_VERSION). Skipping publish."
             echo "::set-output name=publish::false"
           fi
 
-      - name: Publish file4
-        if: steps.check_file4.outputs.publish == 'true'
+      # Publish the packages if the output is 'true' from previous steps
+      - name: Publish file 1
+        if: steps.file1.outputs.publish == 'true'
+        run: npm publish plugins/file1/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+      - name: Publish file 2
+        if: steps.file2.outputs.publish == 'true'
+        run: npm publish plugins/file2/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+      - name: Publish file 3
+        if: steps.file3.outputs.publish == 'true'
+        run: npm publish plugins/file3/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+      - name: Publish file 4
+        if: steps.file4.outputs.publish == 'true'
         run: npm publish plugins/file4/ --registry=https://npm.pkg.github.com/Kubernetes-administration
