@@ -23,6 +23,11 @@
     "homepage": "https://github.com/Kubernetes-administration/GitHubActions#readme",
     "publishConfig": {
     "registry": "https://npm.pkg.github.com/Kubernetes-administration"
+    },
+    "workspaces":{
+      "packages": [
+        "plugins/*"
+      ]
     }
   }
   

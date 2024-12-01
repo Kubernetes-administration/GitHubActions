@@ -9,6 +9,7 @@ on:
 
 env: 
     NODE_VERSION: 18.x
+    PARALLEL_PUBLISH_JOBS: 10
 
 jobs:
 
@@ -37,8 +38,10 @@ jobs:
           run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}" >> ~/.npmrc
 
         # Step 6: Publish the package to npm registry
-        - name: Publish package
-          run: npm publish --registry=https://npm.pkg.github.com/Kubernetes-administration
+        # - name: Publish package
+        #   run: npm publish --registry=https://npm.pkg.github.com/Kubernetes-administration
+        - name: Yarn publish
+          run: yarn workspaces foreach -p -j ${{ env.PARALLEL_PUBLISH_JOBS }} npm publish
 
   changed_files:
     runs-on: ubuntu-latest
