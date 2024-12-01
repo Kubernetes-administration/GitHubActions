@@ -36,16 +36,6 @@ jobs:
         run: |
           echo "Changed files detected: ${{ steps.changes.outputs.changed_files }}"
 
-      # Example of using the changed files in a conditional step
-      - name: Run action if specific files changed
-        run: |
-          # Check if any relevant files (src or package.json) are in the changed files list
-          if [[ "${{ steps.changes.outputs.changed_files }}" == *"plugins/"* ]]; then
-            echo "Relevant files changed in plugins, running the next steps..."
-          else
-            echo "No relevant changes detected, skipping..."
-          fi  
-
   publish:
     runs-on: ubuntu-latest
     permissions:
@@ -77,9 +67,11 @@ jobs:
         run: |
           PACKAGE_NAME="@kubernetes-administration/file1"
           NEW_VERSION=$(jq -r '.version' plugins/file1/package.json)  # Extract version from package.json
-          
+          echo "New version extracted: $NEW_VERSION"
+
           # Get the existing version from the registry
           EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
+          echo "Existing version from registry: $EXISTING_VERSION"
 
           # Check if the package doesn't exist or if the new version is greater than the existing version
           if [ -z "$EXISTING_VERSION" ]; then
@@ -103,9 +95,11 @@ jobs:
         run: |
           PACKAGE_NAME="@kubernetes-administration/file2"
           NEW_VERSION=$(jq -r '.version' plugins/file2/package.json)  # Extract version from package.json
-          
+          echo "New version extracted: $NEW_VERSION"
+
           # Get the existing version from the registry
           EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
+          echo "Existing version from registry: $EXISTING_VERSION"
 
           # Check if the package doesn't exist or if the new version is greater than the existing version
           if [ -z "$EXISTING_VERSION" ]; then
@@ -129,9 +123,11 @@ jobs:
         run: |
           PACKAGE_NAME="@kubernetes-administration/file3"
           NEW_VERSION=$(jq -r '.version' plugins/file3/package.json)  # Extract version from package.json
-          
+          echo "New version extracted: $NEW_VERSION"
+
           # Get the existing version from the registry
           EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
+          echo "Existing version from registry: $EXISTING_VERSION"
 
           # Check if the package doesn't exist or if the new version is greater than the existing version
           if [ -z "$EXISTING_VERSION" ]; then
@@ -155,22 +151,3 @@ jobs:
         run: |
           PACKAGE_NAME="@kubernetes-administration/file4"
           NEW_VERSION=$(jq -r '.version' plugins/file4/package.json)  # Extract version from package.json
-          
-          # Get the existing version from the registry
-          EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
-
-          # Check if the package doesn't exist or if the new version is greater than the existing version
-          if [ -z "$EXISTING_VERSION" ]; then
-            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
-            echo "::set-output name=publish::true"
-          elif semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
-            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
-            echo "::set-output name=publish::true"
-          else
-            echo "New version ($NEW_VERSION) is not greater than the existing version ($EXISTING_VERSION). Skipping publish."
-            echo "::set-output name=publish::false"
-          fi
-
-      - name: Publish file4
-        if: steps.check_file4.outputs.publish == 'true'
-        run: npm publish plugins/file4/ --registry=https://npm.pkg.github.com/Kubernetes-administration
