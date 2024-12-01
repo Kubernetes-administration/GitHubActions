@@ -11,6 +11,32 @@ env:
     NODE_VERSION: 18.x
 
 jobs:
+
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+        contents: read
+        packages: write
+    steps:
+        - uses: actions/checkout@v4
+    
+        - name: Use Node.js ${{ env.NODE_VERSION }}
+          uses: actions/setup-node@v4
+          with:
+            node-version: ${{ env.NODE_VERSION }}
+            cache: yarn
+
+        - name: Install yarn 2
+          run: npm install -g yarn@berry
+
+        # Step 5: Set npm authentication token
+        - name: Set npm token
+          run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
+
+        # Step 6: Publish the package to npm registry
+        - name: Publish package
+          run: yarn publish --non-interactive --access public  # Use --access restricted if you want to publish as private
+          
   changed_files:
     runs-on: ubuntu-latest
     name: Test changed-files
@@ -45,28 +71,3 @@ jobs:
           else
             echo "No relevant changes detected, skipping..."
           fi
-    
-  publish:
-    runs-on: ubuntu-latest
-    permissions:
-        contents: read
-        packages: write
-    steps:
-        - uses: actions/checkout@v4
-    
-        - name: Use Node.js ${{ env.NODE_VERSION }}
-          uses: actions/setup-node@v4
-          with:
-            node-version: ${{ env.NODE_VERSION }}
-            cache: yarn
-
-        - name: Install yarn 2
-          run: npm install -g yarn@berry
-
-        # Step 5: Set npm authentication token
-        - name: Set npm token
-          run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
-
-        # Step 6: Publish the package to npm registry
-        - name: Publish package
-          run: yarn publish --non-interactive --access public  # Use --access restricted if you want to publish as private
