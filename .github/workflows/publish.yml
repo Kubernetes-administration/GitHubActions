@@ -10,6 +10,76 @@ on:
 env: 
     NODE_VERSION: 18.x
 
+# jobs:
+#   publish:
+#     runs-on: ubuntu-latest
+#     permissions:
+#       contents: read
+#       packages: write
+#     steps:
+#       - uses: actions/checkout@v4
+       
+#       - name: Set up Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: ${{ env.NODE_VERSION }}
+#           cache: yarn
+
+#       - name: Install yarn 2
+#         run: npm install -g yarn@berry
+
+#       - name: Set npm token for GitHub registry
+#         run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}" >> ~/.npmrc
+
+#       # Get the current version from package.json
+#       - name: Get current version
+#         id: version
+#         run: |
+#           VERSION=$(node -p "require('./plugins/file1/package.json').version")
+#           echo "Current version is $VERSION"
+#           echo "::set-output name=version::$VERSION"
+
+#       # Check if the version already exists on GitHub registry
+#       - name: Check if version exists
+#         id: check_version
+#         run: |
+#           VERSION=${{ steps.version.outputs.version }}
+#           echo "Checking if version $VERSION exists in the GitHub registry..."
+#           RESPONSE=$(npm info @kubernetes-administration/file1@$VERSION --registry=https://npm.pkg.github.com/Kubernetes-administration)
+#           if [[ $RESPONSE == *"404 Not Found"* ]]; then
+#             echo "Version $VERSION not found. Proceeding to publish."
+#             echo "::set-output name=exists::false"
+#           else
+#             echo "Version $VERSION already exists. Skipping publish."
+#             echo "::set-output name=exists::true"
+#           fi
+
+#       # Conditionally publish if the version does not exist
+#       - name: Publish file 1
+#         if: steps.check_version.outputs.exists == 'false'
+#         run: |
+#           echo "Publishing file 1 version ${{ steps.version.outputs.version }}..."
+#           npm publish plugins/file1/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+#       # Repeat for other files if needed
+#       - name: Publish file 2
+#         if: steps.check_version.outputs.exists == 'false'
+#         run: |
+#           echo "Publishing file 2 version ${{ steps.version.outputs.version }}..."
+#           npm publish plugins/file2/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+#       - name: Publish file 3
+#         if: steps.check_version.outputs.exists == 'false'
+#         run: |
+#           echo "Publishing file 3 version ${{ steps.version.outputs.version }}..."
+#           npm publish plugins/file3/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+#       - name: Publish file 4
+#         if: steps.check_version.outputs.exists == 'false'
+#         run: |
+#           echo "Publishing file 4 version ${{ steps.version.outputs.version }}..."
+#           npm publish plugins/file4/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -54,14 +124,14 @@ jobs:
             echo "::set-output name=exists::true"
           fi
 
-      # Conditionally publish if the version does not exist
+      # Publish the package if the version does not exist
       - name: Publish file 1
         if: steps.check_version.outputs.exists == 'false'
         run: |
           echo "Publishing file 1 version ${{ steps.version.outputs.version }}..."
           npm publish plugins/file1/ --registry=https://npm.pkg.github.com/Kubernetes-administration
 
-      # Repeat for other files if needed
+      # Repeat the above steps for other files
       - name: Publish file 2
         if: steps.check_version.outputs.exists == 'false'
         run: |
