@@ -151,6 +151,143 @@ jobs:
 #           npm publish plugins/file4/ --registry=https://npm.pkg.github.com/Kubernetes-administration
 
 # jobs:
+  # publish:
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     contents: read
+  #     packages: write
+  #   steps:
+  #     - uses: actions/checkout@v4
+       
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: ${{ env.NODE_VERSION }}
+  #         cache: yarn
+
+  #     - name: Install yarn 2
+  #       run: npm install -g yarn@berry
+
+  #     - name: Set npm token for GitHub registry
+  #       run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}" >> ~/.npmrc
+
+  #     # Get the current version from package.json (for file1)
+  #     - name: Get current version for file1
+  #       id: version1
+  #       run: |
+  #         VERSION=$(node -p "require('./plugins/file1/package.json').version")
+  #         echo "Current version for file1 is $VERSION"
+  #         echo "::set-output name=version::$VERSION"
+
+  #     # Check if file1 exists
+  #     - name: Check if file1 exists
+  #       id: check_file1
+  #       run: |
+  #         PACKAGE_NAME="@kubernetes-administration/file1"
+  #         RESPONSE=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration)
+  #         if [[ $RESPONSE == *"404 Not Found"* ]]; then
+  #           echo "Package $PACKAGE_NAME not found. Proceeding to publish."
+  #           echo "::set-output name=exists::false"
+  #         else
+  #           echo "Package $PACKAGE_NAME already exists. Skipping publish."
+  #           echo "::set-output name=exists::true"
+  #         fi
+
+  #     # Publish file1 if it doesn't exist
+  #     - name: Publish file1
+  #       if: steps.check_file1.outputs.exists == 'false'
+  #       run: |
+  #         echo "Publishing file1 version ${{ steps.version1.outputs.version }}..."
+  #         npm publish plugins/file1/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+  #     # Get the current version from package.json (for file2)
+  #     - name: Get current version for file2
+  #       id: version2
+  #       run: |
+  #         VERSION=$(node -p "require('./plugins/file2/package.json').version")
+  #         echo "Current version for file2 is $VERSION"
+  #         echo "::set-output name=version::$VERSION"
+
+  #     # Check if file2 exists
+  #     - name: Check if file2 exists
+  #       id: check_file2
+  #       run: |
+  #         PACKAGE_NAME="@kubernetes-administration/file2"
+  #         RESPONSE=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration)
+  #         if [[ $RESPONSE == *"404 Not Found"* ]]; then
+  #           echo "Package $PACKAGE_NAME not found. Proceeding to publish."
+  #           echo "::set-output name=exists::false"
+  #         else
+  #           echo "Package $PACKAGE_NAME already exists. Skipping publish."
+  #           echo "::set-output name=exists::true"
+  #         fi
+
+  #     # Publish file2 if it doesn't exist
+  #     - name: Publish file2
+  #       if: steps.check_file2.outputs.exists == 'false'
+  #       run: |
+  #         echo "Publishing file2 version ${{ steps.version2.outputs.version }}..."
+  #         npm publish plugins/file2/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+  #     # Get the current version from package.json (for file3)
+  #     - name: Get current version for file3
+  #       id: version3
+  #       run: |
+  #         VERSION=$(node -p "require('./plugins/file3/package.json').version")
+  #         echo "Current version for file3 is $VERSION"
+  #         echo "::set-output name=version::$VERSION"
+
+  #     # Check if file3 exists
+  #     - name: Check if file3 exists
+  #       id: check_file3
+  #       run: |
+  #         PACKAGE_NAME="@kubernetes-administration/file3"
+  #         RESPONSE=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration)
+  #         if [[ $RESPONSE == *"404 Not Found"* ]]; then
+  #           echo "Package $PACKAGE_NAME not found. Proceeding to publish."
+  #           echo "::set-output name=exists::false"
+  #         else
+  #           echo "Package $PACKAGE_NAME already exists. Skipping publish."
+  #           echo "::set-output name=exists::true"
+  #         fi
+
+  #     # Publish file3 if it doesn't exist
+  #     - name: Publish file3
+  #       if: steps.check_file3.outputs.exists == 'false'
+  #       run: |
+  #         echo "Publishing file3 version ${{ steps.version3.outputs.version }}..."
+  #         npm publish plugins/file3/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+  #     # Get the current version from package.json (for file4)
+  #     - name: Get current version for file4
+  #       id: version4
+  #       run: |
+  #         VERSION=$(node -p "require('./plugins/file4/package.json').version")
+  #         echo "Current version for file4 is $VERSION"
+  #         echo "::set-output name=version::$VERSION"
+
+  #     # Check if file4 exists
+  #     - name: Check if file4 exists
+  #       id: check_file4
+  #       run: |
+  #         PACKAGE_NAME="@kubernetes-administration/file4"
+  #         RESPONSE=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration)
+  #         if [[ $RESPONSE == *"404 Not Found"* ]]; then
+  #           echo "Package $PACKAGE_NAME not found. Proceeding to publish."
+  #           echo "::set-output name=exists::false"
+  #         else
+  #           echo "Package $PACKAGE_NAME already exists. Skipping publish."
+  #           echo "::set-output name=exists::true"
+  #         fi
+
+  #     # Publish file4 if it doesn't exist
+  #     - name: Publish file4
+  #       if: steps.check_file4.outputs.exists == 'false'
+  #       run: |
+  #         echo "Publishing file4 version ${{ steps.version4.outputs.version }}..."
+  #         npm publish plugins/file4/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+
   publish:
     runs-on: ubuntu-latest
     permissions:
@@ -179,23 +316,30 @@ jobs:
           echo "Current version for file1 is $VERSION"
           echo "::set-output name=version::$VERSION"
 
-      # Check if file1 exists
-      - name: Check if file1 exists
+      # Check if file1 exists and compare versions
+      - name: Check if file1 exists and compare versions
         id: check_file1
         run: |
           PACKAGE_NAME="@kubernetes-administration/file1"
-          RESPONSE=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration)
-          if [[ $RESPONSE == *"404 Not Found"* ]]; then
-            echo "Package $PACKAGE_NAME not found. Proceeding to publish."
-            echo "::set-output name=exists::false"
+          NEW_VERSION=${{ steps.version1.outputs.version }}
+          
+          # Get the existing version from the registry
+          EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
+
+          if [ -z "$EXISTING_VERSION" ]; then
+            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
+            echo "::set-output name=publish::true"
+          elif [ "$(semver $NEW_VERSION -gt $EXISTING_VERSION)" == "true" ]; then
+            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
+            echo "::set-output name=publish::true"
           else
-            echo "Package $PACKAGE_NAME already exists. Skipping publish."
-            echo "::set-output name=exists::true"
+            echo "New version ($NEW_VERSION) is not greater than the existing version ($EXISTING_VERSION). Skipping publish."
+            echo "::set-output name=publish::false"
           fi
 
-      # Publish file1 if it doesn't exist
+      # Publish file1 if necessary
       - name: Publish file1
-        if: steps.check_file1.outputs.exists == 'false'
+        if: steps.check_file1.outputs.publish == 'true'
         run: |
           echo "Publishing file1 version ${{ steps.version1.outputs.version }}..."
           npm publish plugins/file1/ --registry=https://npm.pkg.github.com/Kubernetes-administration
@@ -208,23 +352,30 @@ jobs:
           echo "Current version for file2 is $VERSION"
           echo "::set-output name=version::$VERSION"
 
-      # Check if file2 exists
-      - name: Check if file2 exists
+      # Check if file2 exists and compare versions
+      - name: Check if file2 exists and compare versions
         id: check_file2
         run: |
           PACKAGE_NAME="@kubernetes-administration/file2"
-          RESPONSE=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration)
-          if [[ $RESPONSE == *"404 Not Found"* ]]; then
-            echo "Package $PACKAGE_NAME not found. Proceeding to publish."
-            echo "::set-output name=exists::false"
+          NEW_VERSION=${{ steps.version2.outputs.version }}
+          
+          # Get the existing version from the registry
+          EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
+
+          if [ -z "$EXISTING_VERSION" ]; then
+            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
+            echo "::set-output name=publish::true"
+          elif [ "$(semver $NEW_VERSION -gt $EXISTING_VERSION)" == "true" ]; then
+            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
+            echo "::set-output name=publish::true"
           else
-            echo "Package $PACKAGE_NAME already exists. Skipping publish."
-            echo "::set-output name=exists::true"
+            echo "New version ($NEW_VERSION) is not greater than the existing version ($EXISTING_VERSION). Skipping publish."
+            echo "::set-output name=publish::false"
           fi
 
-      # Publish file2 if it doesn't exist
+      # Publish file2 if necessary
       - name: Publish file2
-        if: steps.check_file2.outputs.exists == 'false'
+        if: steps.check_file2.outputs.publish == 'true'
         run: |
           echo "Publishing file2 version ${{ steps.version2.outputs.version }}..."
           npm publish plugins/file2/ --registry=https://npm.pkg.github.com/Kubernetes-administration
@@ -237,23 +388,30 @@ jobs:
           echo "Current version for file3 is $VERSION"
           echo "::set-output name=version::$VERSION"
 
-      # Check if file3 exists
-      - name: Check if file3 exists
+      # Check if file3 exists and compare versions
+      - name: Check if file3 exists and compare versions
         id: check_file3
         run: |
           PACKAGE_NAME="@kubernetes-administration/file3"
-          RESPONSE=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration)
-          if [[ $RESPONSE == *"404 Not Found"* ]]; then
-            echo "Package $PACKAGE_NAME not found. Proceeding to publish."
-            echo "::set-output name=exists::false"
+          NEW_VERSION=${{ steps.version3.outputs.version }}
+          
+          # Get the existing version from the registry
+          EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
+
+          if [ -z "$EXISTING_VERSION" ]; then
+            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
+            echo "::set-output name=publish::true"
+          elif [ "$(semver $NEW_VERSION -gt $EXISTING_VERSION)" == "true" ]; then
+            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
+            echo "::set-output name=publish::true"
           else
-            echo "Package $PACKAGE_NAME already exists. Skipping publish."
-            echo "::set-output name=exists::true"
+            echo "New version ($NEW_VERSION) is not greater than the existing version ($EXISTING_VERSION). Skipping publish."
+            echo "::set-output name=publish::false"
           fi
 
-      # Publish file3 if it doesn't exist
+      # Publish file3 if necessary
       - name: Publish file3
-        if: steps.check_file3.outputs.exists == 'false'
+        if: steps.check_file3.outputs.publish == 'true'
         run: |
           echo "Publishing file3 version ${{ steps.version3.outputs.version }}..."
           npm publish plugins/file3/ --registry=https://npm.pkg.github.com/Kubernetes-administration
@@ -266,26 +424,35 @@ jobs:
           echo "Current version for file4 is $VERSION"
           echo "::set-output name=version::$VERSION"
 
-      # Check if file4 exists
-      - name: Check if file4 exists
+      # Check if file4 exists and compare versions
+      - name: Check if file4 exists and compare versions
         id: check_file4
         run: |
           PACKAGE_NAME="@kubernetes-administration/file4"
-          RESPONSE=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration)
-          if [[ $RESPONSE == *"404 Not Found"* ]]; then
-            echo "Package $PACKAGE_NAME not found. Proceeding to publish."
-            echo "::set-output name=exists::false"
+          NEW_VERSION=${{ steps.version4.outputs.version }}
+          
+          # Get the existing version from the registry
+          EXISTING_VERSION=$(npm info $PACKAGE_NAME --registry=https://npm.pkg.github.com/Kubernetes-administration version 2>/dev/null)
+
+          if [ -z "$EXISTING_VERSION" ]; then
+            echo "Package $PACKAGE_NAME does not exist in the registry. Proceeding to publish."
+            echo "::set-output name=publish::true"
+          elif [ "$(semver $NEW_VERSION -gt $EXISTING_VERSION)" == "true" ]; then
+            echo "New version ($NEW_VERSION) is greater than the existing version ($EXISTING_VERSION). Proceeding to publish."
+            echo "::set-output name=publish::true"
           else
-            echo "Package $PACKAGE_NAME already exists. Skipping publish."
-            echo "::set-output name=exists::true"
+            echo "New version ($NEW_VERSION) is not greater than the existing version ($EXISTING_VERSION). Skipping publish."
+            echo "::set-output name=publish::false"
           fi
 
-      # Publish file4 if it doesn't exist
+      # Publish file4 if necessary
       - name: Publish file4
-        if: steps.check_file4.outputs.exists == 'false'
+        if: steps.check_file4.outputs.publish == 'true'
         run: |
           echo "Publishing file4 version ${{ steps.version4.outputs.version }}..."
           npm publish plugins/file4/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+
 
   # publish:
   #   runs-on: ubuntu-latest
