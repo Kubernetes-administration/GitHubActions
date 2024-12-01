@@ -41,7 +41,7 @@ jobs:
         # - name: Publish package
         #   run: npm publish --registry=https://npm.pkg.github.com/Kubernetes-administration
         - name: Yarn publish
-          run: yarn workspaces foreach -p -j ${{ env.PARALLEL_PUBLISH_JOBS }} npm publish
+          run: yarn workspaces foreach -p -j ${{ env.PARALLEL_PUBLISH_JOBS }} -v --no-private npm publish
 
   changed_files:
     runs-on: ubuntu-latest
