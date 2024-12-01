@@ -22,7 +22,7 @@
     },
     "homepage": "https://github.com/Kubernetes-administration/GitHubActions#readme",
     "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://npm.pkg.github.com@ukohae"
     }
   }
   
