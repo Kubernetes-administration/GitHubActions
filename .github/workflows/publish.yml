@@ -62,7 +62,7 @@ jobs:
 
             if [ -z "$EXISTING_VERSION" ] || semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
               echo "Publishing $PACKAGE_NAME ($NEW_VERSION)..."
-              npm publish plugins/$plugin/ --registry=https://npm.pkg.github.com/Kubernetes-administration --verbose
+              npm publish plugins/$plugin/ --registry=https://npm.pkg.github.com/Kubernetes-administration --verbose || exit 1
             else
               echo "Skipping $PACKAGE_NAME: Version $NEW_VERSION is not greater than existing version $EXISTING_VERSION"
             fi
