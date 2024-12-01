@@ -473,6 +473,9 @@ jobs:
       - name: Set npm token for GitHub registry
         run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}" >> ~/.npmrc
 
+      - name: Install semver
+        run: npm install -g semver
+
       # Get the current version from package.json (for file1)
       - name: Get current version for file1
         id: version1
