@@ -2,14 +2,13 @@ name: publish
 on:
   push:
     branches:
-      - main
+      - develop
     paths:
       - 'plugins/**/package.json'    # Any package.json inside the plugins folder
       - 'plugins/**/src/**'          # Any file inside the src folder in the plugins folder
 
 env: 
     NODE_VERSION: 18.x
-    PARALLEL_PUBLISH_JOBS: 10
 
 jobs:
   changed_files:
@@ -71,6 +70,18 @@ jobs:
         - name: Set GitHub npm token for GitHub registry
           run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}" >> ~/.npmrc
 
-        # Step 6: Publish the package to npm registry
-        - name: Publish package
-          run: npm publish --registry=https://npm.pkg.github.com/Kubernetes-administration
+        # # Step 6: Publish the package to npm registry
+        # - name: Publish package
+        #   run: npm publish --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+        - name: Publish file 1
+          run: npm publish plugins/file1 --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+        - name: Publish file 2
+          run: npm publish plugins/file2 --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+        - name: Publish file 3
+          run: npm publish plugins/file3 --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+        - name: Publish file 4
+          run: npm publish plugins/file3 --registry=https://npm.pkg.github.com/Kubernetes-administration
