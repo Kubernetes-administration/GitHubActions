@@ -11,77 +11,71 @@ env:
     NODE_VERSION: 18.x
 
 jobs:
-  changed_files:
-    runs-on: ubuntu-latest
-    name: Test changed-files
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      # Step to get the list of changed files between the previous and current commit
-      - name: Get changed files
-        id: changes
-        run: |
-          # Get the list of changed files
-          changed_files=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }})
-          echo "Changed files: $changed_files"
-          
-          # Save the list of changed files as an output variable to use later
-          echo "::set-output name=changed_files::$changed_files"
-
-      # Optional: Display the changed files
-      - name: Display changed files
-        run: |
-          echo "Changed files detected: ${{ steps.changes.outputs.changed_files }}"
-
-      # Example of using the changed files in a conditional step
-      - name: Run action if specific files changed
-        run: |
-          # Check if any relevant files (src or package.json) are in the changed files list
-          if [[ "${{ steps.changes.outputs.changed_files }}" == *"plugins/"* ]]; then
-            echo "Relevant files changed in plugins, running the next steps..."
-            # You can add additional steps here that should run when relevant files change
-          else
-            echo "No relevant changes detected, skipping..."
-          fi  
-          
   publish:
     runs-on: ubuntu-latest
     permissions:
-        contents: read
-        packages: write
+      contents: read
+      packages: write
     steps:
-        - uses: actions/checkout@v4
-    
-        - name: Use Node.js ${{ env.NODE_VERSION }}
-          uses: actions/setup-node@v4
-          with:
-            node-version: ${{ env.NODE_VERSION }}
-            cache: yarn
+      - uses: actions/checkout@v4
+       
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: yarn
 
-        - name: Install yarn 2
-          run: npm install -g yarn@berry
-        # Step 5: Set npm token
-        - name: Set npm token for npmjs registry
-          run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" >> ~/.npmrc
+      - name: Install yarn 2
+        run: npm install -g yarn@berry
 
-        # Step 5.1: Set GitHub npm token (for GitHub Packages)
-        - name: Set GitHub npm token for GitHub registry
-          run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}" >> ~/.npmrc
+      - name: Set npm token for GitHub registry
+        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}" >> ~/.npmrc
 
-        # # Step 6: Publish the package to npm registry
-        # - name: Publish package
-        #   run: npm publish --registry=https://npm.pkg.github.com/Kubernetes-administration
+      # Get the current version from package.json
+      - name: Get current version
+        id: version
+        run: |
+          VERSION=$(node -p "require('./plugins/file1/package.json').version")
+          echo "Current version is $VERSION"
+          echo "::set-output name=version::$VERSION"
 
-        - name: Publish file 1
-          run: npm publish plugins/file1/ --registry=https://npm.pkg.github.com/Kubernetes-administration --verbose
+      # Check if the version already exists on GitHub registry
+      - name: Check if version exists
+        id: check_version
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          echo "Checking if version $VERSION exists in the GitHub registry..."
+          RESPONSE=$(npm info @kubernetes-administration/file1@$VERSION --registry=https://npm.pkg.github.com/Kubernetes-administration)
+          if [[ $RESPONSE == *"404 Not Found"* ]]; then
+            echo "Version $VERSION not found. Proceeding to publish."
+            echo "::set-output name=exists::false"
+          else
+            echo "Version $VERSION already exists. Skipping publish."
+            echo "::set-output name=exists::true"
+          fi
 
-        - name: Publish file 2
-          run: npm publish plugins/file2/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+      # Conditionally publish if the version does not exist
+      - name: Publish file 1
+        if: steps.check_version.outputs.exists == 'false'
+        run: |
+          echo "Publishing file 1 version ${{ steps.version.outputs.version }}..."
+          npm publish plugins/file1/ --registry=https://npm.pkg.github.com/Kubernetes-administration
 
-        - name: Publish file 3
-          run: npm publish plugins/file3/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+      # Repeat for other files if needed
+      - name: Publish file 2
+        if: steps.check_version.outputs.exists == 'false'
+        run: |
+          echo "Publishing file 2 version ${{ steps.version.outputs.version }}..."
+          npm publish plugins/file2/ --registry=https://npm.pkg.github.com/Kubernetes-administration
 
-        - name: Publish file 4
-          run: npm publish plugins/file4 --registry=https://npm.pkg.github.com/Kubernetes-administration
+      - name: Publish file 3
+        if: steps.check_version.outputs.exists == 'false'
+        run: |
+          echo "Publishing file 3 version ${{ steps.version.outputs.version }}..."
+          npm publish plugins/file3/ --registry=https://npm.pkg.github.com/Kubernetes-administration
+
+      - name: Publish file 4
+        if: steps.check_version.outputs.exists == 'false'
+        run: |
+          echo "Publishing file 4 version ${{ steps.version.outputs.version }}..."
+          npm publish plugins/file4/ --registry=https://npm.pkg.github.com/Kubernetes-administration
