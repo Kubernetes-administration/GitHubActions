@@ -27,8 +27,7 @@ jobs:
           echo "::set-output name=changed_files::$changed_files"
 
       - name: Display changed files
-        run: |
-            echo "Changed files: ${{ steps.changes.outputs.changed_files }}"
+        run: echo "Changed files: ${{ steps.changes.outputs.changed_files }}"
 
   publish:
     runs-on: ubuntu-latest
@@ -62,7 +61,11 @@ jobs:
 
             if [ -z "$EXISTING_VERSION" ] || semver -r ">$EXISTING_VERSION" "$NEW_VERSION"; then
               echo "Publishing $PACKAGE_NAME ($NEW_VERSION)..."
-              npm publish plugins/$plugin/ --registry=https://npm.pkg.github.com/Kubernetes-administration --verbose || exit 1
+              npm publish plugins/$plugin/ --registry=https://npm.pkg.github.com/Kubernetes-administration --verbose
+              if [ $? -ne 0 ]; then
+                echo "Error publishing $PACKAGE_NAME. Exiting."
+                exit 1
+              fi
             else
               echo "Skipping $PACKAGE_NAME: Version $NEW_VERSION is not greater than existing version $EXISTING_VERSION"
             fi
