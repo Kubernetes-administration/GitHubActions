@@ -1,5 +1,5 @@
 {
-    "name": "ukohae",
+    "name": "Kubernetes-administration/GitHubActions",
     "version": "1.0.0",
     "description": "A short description of your package",
     "main": "index.js",           
@@ -22,7 +22,7 @@
     },
     "homepage": "https://github.com/Kubernetes-administration/GitHubActions#readme",
     "publishConfig": {
-    "registry": "https://npm.pkg.github.com/@ukohae"
+    "registry": "https://npm.pkg.github.com/Kubernetes-administration"
     }
   }
   
